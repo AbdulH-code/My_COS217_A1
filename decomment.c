@@ -11,7 +11,7 @@ enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMME
 /* Exit Codes returned by main */
 enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
 /* Number of lines written to std out */
-//int lineCount = 1;
+/*int lineCount = 1;*/
 /* The line of the most recent comment start */
 /*int commentLine;*/
 
