@@ -7,7 +7,8 @@
 #include <stdio.h>
 
 /* States associated with program DFA */
-enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMMENT, CHECK_END};
+enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMMENT, CHECK_END, ESCAPED_DOUBLE,
+        ESCAPED_SINGLE};
 enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
 int lineCount = 1;
 int commentLine;
@@ -64,11 +65,23 @@ enum Statetype handleLiteral_Single(int c) {
     if (c == '\'') {
         state = PRINT;
     }
+    else if (c == '\\') {
+        state = ESCAPED_SINGLE;
+        putchar(c);
+    }
     else {
         state = LITERAL_SINGLE;
+        putchar(c);
     }
-    putchar(c);
+
     updateLineCount(c);
+    return state;
+}
+
+enum Statetype handleEscaped_Single(int c) {
+    enum Statetype state;
+    putchar(c);
+    state = LITERAL_SINGLE;
     return state;
 }
 
@@ -77,11 +90,22 @@ enum Statetype handleLiteral_Double(int c) {
     if (c == '"') {
         state = PRINT;
     }
+    else if (c == '\\') {
+        state = ESCAPED_DOUBLE;
+        putchar(c);
+    }
     else {
         state = LITERAL_DOUBLE;
     }
     putchar(c);
     updateLineCount(c);
+    return state;
+}
+
+enum Statetype handleEscaped_Double(int c) {
+    enum Statetype state;
+    putchar(c);
+    state = LITERAL_DOUBLE;
     return state;
 }
 
@@ -157,7 +181,7 @@ int handleEOF(enum Statetype state) {
     else {return EXIT_SUCCESS;}
 }
 
-int main(void){
+int main(void) {
     int c;
     enum Statetype state = START;
     while ((c = getchar()) != EOF) {
@@ -183,6 +207,11 @@ int main(void){
             case CHECK_END:
                 state = handleCheck_End(c);
                 break;
+            case ESCAPED_SINGLE:
+                state = handleEscaped_Single(c);
+                break;
+            case ESCAPED_DOUBLE:
+                state = handleEscaped_Double(c);
         }
     }
     return handleEOF(state);
