@@ -67,13 +67,11 @@ enum Statetype handleLiteral_Single(int c) {
     }
     else if (c == '\\') {
         state = ESCAPED_SINGLE;
-        putchar(c);
     }
     else {
         state = LITERAL_SINGLE;
-        putchar(c);
     }
-
+    putchar(c);
     updateLineCount(c);
     return state;
 }
