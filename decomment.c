@@ -11,15 +11,15 @@ enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMME
 /* Exit Codes returned by main */
 enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
 /* Number of lines written to std out */
-int lineCount = 1;
+//int lineCount = 1;
 /* The line of the most recent comment start */
-int commentLine;
+//int commentLine;
 
 /* updates the line count when argument is a newline character */
-int updateLineCount(int c) {
+/*int updateLineCount(int c) {
     if (c == '\n') {lineCount++;}
     return 0;
-}
+}*/
 
 /* Starting state of DFA, chooses next state and outputs the char from stdin unless it is a forward slash */
 enum Statetype handleStart(int c) {
@@ -39,7 +39,7 @@ enum Statetype handleStart(int c) {
         state = PRINT;
         putchar(c);
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -61,7 +61,7 @@ enum Statetype handlePrint(int c) {
         state = PRINT;
         putchar(c);
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -79,7 +79,7 @@ enum Statetype handleLiteral_Single(int c) {
     else {
         state = LITERAL_SINGLE;
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -97,7 +97,7 @@ enum Statetype handleLiteral_Double(int c) {
     else {
         state = LITERAL_DOUBLE;
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -108,7 +108,7 @@ enum Statetype handleCheck_Start(int c) {
     enum Statetype state;
     if (c == '*') {
         printf(" ");
-        commentLine = lineCount;
+        //commentLine = lineCount;
         state = COMMENT;
     }
     else if (c == '\'') {
@@ -128,7 +128,7 @@ enum Statetype handleCheck_Start(int c) {
         state = PRINT;
         putchar(c);
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -145,7 +145,7 @@ enum Statetype handleComment(int c) {
     else {
         state = COMMENT;
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
@@ -165,24 +165,27 @@ enum Statetype handleCheck_End(int c) {
     else {
         state = COMMENT;
     }
-    updateLineCount(c);
+    //updateLineCount(c);
     return state;
 }
 
 /* Determines exit code based on current state and prints error message if it was a reject state */
-int handleEOF(enum Statetype state) {
+int handleEOF(enum Statetype state, int line) {
     enum Exitcode;
     if (state == COMMENT || state == CHECK_END) {
-        fprintf(stderr, "Error: line %d: unterminated comment\n", commentLine);
+        fprintf(stderr, "Error: line %d: unterminated comment\n", line);
         return EXIT_FAILURE;
     }
     else {return EXIT_SUCCESS;}
 }
 
 int main(void) {
-    int c;
+    int c; /* current character in stdin */
+    int commentLine = 0;
+    int lineCount = 1;
     enum Statetype state = START;
     while ((c = getchar()) != EOF) {
+        if (c == '\n') {lineCount++;}
         switch (state) {
             case START:
                 state = handleStart(c);
@@ -197,6 +200,7 @@ int main(void) {
                 state = handleLiteral_Double(c);
                 break;
             case CHECK_START:
+                if (c == '*') {commentLine = lineCount;}
                 state = handleCheck_Start(c);
                 break;
             case COMMENT:
@@ -207,6 +211,6 @@ int main(void) {
                 break;
         }
     }
-    return handleEOF(state);
+    return handleEOF(state, commentLine);
 }
 

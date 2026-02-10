@@ -4,21 +4,29 @@
 
 START (accept) <-- the start state
     /: CHECK_START
-    " or ': LITERAL
+    ': LITERAL_SINGLE
+    ": LITERAL_DOUBLE
     other: PRINT
 
 PRINT (accept)
     /: CHECK_START
-    " or ': LITERAL
+    ': LITERAL_SINGLE
+    ": LITERAL_DOUBLE
     other: PRINT
 
-LITERAL (accept)
-    " or ': PRINT
-    other: LITERAL
+LITERAL_SINGLE (accept)
+    ': PRINT
+    other: LITERAL_SINGLE
+
+LITERAL_DOUBLE (accept)
+    ": PRINT
+    other: LITERAL_DOUBLE
 
 CHECK_START (accept)
     *: COMMENT
-    " or ': LITERAL
+    ': LITERAL_SINGLE
+    ": LITERAL_DOUBLE
+    /: CHECK_START
     other: PRINT
 
 COMMENT (reject)
@@ -27,4 +35,5 @@ COMMENT (reject)
 
 CHECK_END (reject)
     /: START
+    *: CHECK_END
     other: COMMENT
