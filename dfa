@@ -1,0 +1,35 @@
+// Decommenting DFA
+// COS 217 Assignment 1
+// Abdulkadir Husein
+
+START (accept) <-- the start state
+    /: CHECK_START
+    " or ': LITERAL
+    other: PRINT
+
+PRINT (accept)
+    /: CHECK_START
+    " or ': LITERAL
+    other: PRINT
+
+LITERAL (accept)
+    " or ': PRINT
+    other: LITERAL
+
+CHECK_START (accept)
+    *: COMMENT
+    " or ': LITERAL
+    other: PRINT
+
+COMMENT (reject)
+    '\n': NEWLINE
+    *: CHECK_END
+    other: COMMENT
+
+NEWLINE (reject)
+    *: CHECK_END
+    other: COMMENT
+
+CHECK_END (reject)
+    /: START
+    other: COMMENT
