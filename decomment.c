@@ -7,17 +7,21 @@
 #include <stdio.h>
 
 /* States associated with program DFA */
-enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMMENT, CHECK_END, ESCAPED_DOUBLE,
-        ESCAPED_SINGLE};
+enum Statetype {START, PRINT, LITERAL_SINGLE, LITERAL_DOUBLE, CHECK_START, COMMENT, CHECK_END};
+/* Exit Codes returned by main */
 enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
+/* Number of lines written to std out */
 int lineCount = 1;
+/* The line of the most recent comment start */
 int commentLine;
 
+/* updates the line count when argument is a newline character */
 int updateLineCount(int c) {
     if (c == '\n') {lineCount++;}
     return 0;
 }
 
+/* Starting state of DFA, chooses next state and outputs the char from stdin unless it is a forward slash */
 enum Statetype handleStart(int c) {
     enum Statetype state;
     if (c == '/') {
@@ -39,6 +43,7 @@ enum Statetype handleStart(int c) {
     return state;
 }
 
+/* Prints char from stdin unless it is a forward slash, updates state */
 enum Statetype handlePrint(int c) {
     enum Statetype state;
     if (c == '/') {
@@ -60,53 +65,46 @@ enum Statetype handlePrint(int c) {
     return state;
 }
 
+/* Prints all chars inputted to it and continues to loop back to itself until the closing single quote is found */
 enum Statetype handleLiteral_Single(int c) {
     enum Statetype state;
+    putchar(c);
     if (c == '\'') {
         state = PRINT;
     }
     else if (c == '\\') {
-        state = ESCAPED_SINGLE;
+        //state = ESCAPED_SINGLE;
+        state = LITERAL_SINGLE;
+        putchar(getchar());
     }
     else {
         state = LITERAL_SINGLE;
     }
-    putchar(c);
     updateLineCount(c);
     return state;
 }
 
-enum Statetype handleEscaped_Single(int c) {
-    enum Statetype state;
-    putchar(c);
-    state = LITERAL_SINGLE;
-    return state;
-}
-
+/* Prints all chars inputted to it and continues to loop back to itself until the closing double quote is found */
 enum Statetype handleLiteral_Double(int c) {
     enum Statetype state;
+    putchar(c);
     if (c == '"') {
         state = PRINT;
     }
     else if (c == '\\') {
-        state = ESCAPED_DOUBLE;
-        putchar(c);
+        state = LITERAL_DOUBLE;
+        putchar(getchar());
     }
     else {
         state = LITERAL_DOUBLE;
     }
-    putchar(c);
     updateLineCount(c);
     return state;
 }
 
-enum Statetype handleEscaped_Double(int c) {
-    enum Statetype state;
-    putchar(c);
-    state = LITERAL_DOUBLE;
-    return state;
-}
 
+/* Checks if a comment has started in stdin (prints space if so), checks if literal is started, and loops back if
+ * another forward slash is found in stdin */
 enum Statetype handleCheck_Start(int c) {
     enum Statetype state;
     if (c == '*') {
@@ -135,6 +133,7 @@ enum Statetype handleCheck_Start(int c) {
     return state;
 }
 
+/* Loops through characters in comment and only prints if it is newline, checks for end of comment '*' */
 enum Statetype handleComment(int c) {
     enum Statetype state;
     if (c == '\n') {
@@ -151,6 +150,7 @@ enum Statetype handleComment(int c) {
     return state;
 }
 
+/* checks if comment is ended by forward slash, loops back if another asterisk is found, and prints newline if found */
 enum Statetype handleCheck_End(int c) {
     enum Statetype state;
     if (c == '/') {
@@ -170,6 +170,7 @@ enum Statetype handleCheck_End(int c) {
     return state;
 }
 
+/* Determines exit code based on current state and prints error message if it was a reject state */
 int handleEOF(enum Statetype state) {
     enum Exitcode;
     if (state == COMMENT || state == CHECK_END) {
@@ -205,11 +206,6 @@ int main(void) {
             case CHECK_END:
                 state = handleCheck_End(c);
                 break;
-            case ESCAPED_SINGLE:
-                state = handleEscaped_Single(c);
-                break;
-            case ESCAPED_DOUBLE:
-                state = handleEscaped_Double(c);
         }
     }
     return handleEOF(state);
