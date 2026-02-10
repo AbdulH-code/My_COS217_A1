@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 /* States associated with program DFA */
-enum Statetype {START, PRINT, LITERAL, CHECK_START, COMMENT, NEWLINE, CHECK_END};
+enum Statetype {START, PRINT, LITERAL, CHECK_START, COMMENT, CHECK_END};
 enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
 
 enum Statetype handleStart(int c) {
@@ -75,8 +75,8 @@ enum Statetype handleCheck_Start(int c) {
 enum Statetype handleComment(int c) {
     enum Statetype state;
     if (c == '\n') {
-        state = NEWLINE;
         putchar(c);
+        state = COMMENT;
     }
     else if (c == '*') {
         state = CHECK_END;
@@ -84,18 +84,6 @@ enum Statetype handleComment(int c) {
     else {
         state = COMMENT;
     }
-    return state;
-}
-
-enum Statetype handleNewline(int c) {
-    enum Statetype state;
-    if (c == '\n') {
-        state = NEWLINE;
-    }
-    else {
-        state = COMMENT;
-    }
-    putchar(c);
     return state;
 }
 
@@ -114,7 +102,7 @@ enum Statetype handleCheck_End(int c) {
 
 int handleEOF(enum Statetype state) {
     enum Exitcode;
-    if (state == COMMENT || state == NEWLINE || state == CHECK_END) {return EXIT_FAILURE;}
+    if (state == COMMENT || state == CHECK_END) {return EXIT_FAILURE;}
     else {return EXIT_SUCCESS;}
 }
 
@@ -137,9 +125,6 @@ int main(void){
                 break;
             case COMMENT:
                 state = handleComment(c);
-                break;
-            case NEWLINE:
-                state = handleNewline(c);
                 break;
             case CHECK_END:
                 state = handleCheck_End(c);

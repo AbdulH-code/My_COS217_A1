@@ -22,11 +22,6 @@ CHECK_START (accept)
     other: PRINT
 
 COMMENT (reject)
-    '\n': NEWLINE
-    *: CHECK_END
-    other: COMMENT
-
-NEWLINE (reject)
     *: CHECK_END
     other: COMMENT
 
