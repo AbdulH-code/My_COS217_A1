@@ -108,7 +108,7 @@ enum Statetype handleCheck_Start(int c) {
     enum Statetype state;
     if (c == '*') {
         printf(" ");
-        //commentLine = lineCount;
+        /*commentLine = lineCount;*/
         state = COMMENT;
     }
     else if (c == '\'') {
