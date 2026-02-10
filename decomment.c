@@ -39,7 +39,7 @@ enum Statetype handleStart(int c) {
         state = PRINT;
         putchar(c);
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -61,7 +61,7 @@ enum Statetype handlePrint(int c) {
         state = PRINT;
         putchar(c);
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -79,7 +79,7 @@ enum Statetype handleLiteral_Single(int c) {
     else {
         state = LITERAL_SINGLE;
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -97,7 +97,7 @@ enum Statetype handleLiteral_Double(int c) {
     else {
         state = LITERAL_DOUBLE;
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -128,7 +128,7 @@ enum Statetype handleCheck_Start(int c) {
         state = PRINT;
         putchar(c);
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -145,7 +145,7 @@ enum Statetype handleComment(int c) {
     else {
         state = COMMENT;
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
@@ -165,7 +165,7 @@ enum Statetype handleCheck_End(int c) {
     else {
         state = COMMENT;
     }
-    //updateLineCount(c);
+    /*updateLineCount(c);*/
     return state;
 }
 
