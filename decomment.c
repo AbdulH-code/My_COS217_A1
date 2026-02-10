@@ -13,7 +13,7 @@ enum Exitcode {EXIT_SUCCESS, EXIT_FAILURE};
 /* Number of lines written to std out */
 //int lineCount = 1;
 /* The line of the most recent comment start */
-//int commentLine;
+/*int commentLine;*/
 
 /* updates the line count when argument is a newline character */
 /*int updateLineCount(int c) {
